@@ -12,10 +12,8 @@ To use these files effectively, please ensure you have access to the following r
 - **[NMRbox](https://nmrbox.org/):**  
   A comprehensive platform for biomolecular NMR software, providing tools, documentation, tutorials, and cloud-based virtual machines.
 
-## Installation
+To ensure proper functionality and organization of the `C13_1D[X]()` files, please adhere to the following rules:
 
-1. Clone this repository to your local machine:
-   ```bash
-   git clone https://github.com/yourusername/SpinachLibraryX.git
-
+1. **Remove `[X]` from File Names and Function Names**  
+   - Update all `C13_1D[X]()` files by removing the `[X]` placeholder from both the **file names** and the **function names**.
 
