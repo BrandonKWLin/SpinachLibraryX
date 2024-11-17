@@ -1,5 +1,5 @@
-% Modified Spinach File that loops inter.coupling.scalar{2,3} = 55 “+ 1”
-function C13_1D()
+% Modified Spinach File that loops inter.coupling.scalar{1,2} = 50 “+ 1”
+function C13_1D[1]()
 
 % Isotopes
 sys.isotopes={'13C','13C','13C'};
@@ -9,11 +9,11 @@ sys.magnet=21.1;
 % Chemical shifts
 inter.zeeman.scalar={10.0, 40, 70};
 
-% Loop to increment scalar coupling {2,3} and generate 100 figures
-for increment = 0:99  % Loop from 0 to 99 for 100 figures
+% Loop to increment scalar coupling and generate figures
+for increment = 0:99  % Adjust the range as needed
     % Scalar couplings
-    inter.coupling.scalar{1,2} = 50;
-    inter.coupling.scalar{2,3} = 55 + increment;  % Increment each time
+    inter.coupling.scalar{1,2} = 50 + increment;  % Increment each time
+    inter.coupling.scalar{2,3} = 55;
     inter.coupling.scalar{1,3} = 0.0;
     inter.coupling.scalar{3,3} = 0;
 
@@ -56,13 +56,8 @@ for increment = 0:99  % Loop from 0 to 99 for 100 figures
     spectrum = fftshift(fft(fid, parameters.zerofill));
 
     % Plotting
-    figure();
+    figure(); 
     plot_1d(spin_system, real(spectrum), parameters);
-    title(['Scalar Coupling {2,3} = ', num2str(55 + increment)]);  % Add a title to each figure
-
-    % Close figure after displaying to prevent limit issues
-    drawnow;  % Ensure the figure is rendered
-    pause(0.1);  % Brief pause to allow rendering if needed
+    title(['Scalar Coupling {1,2} = ', num2str(50 + increment)]);  % Add a title to each figure
 end
-
 
