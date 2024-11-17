@@ -1,13 +1,4 @@
-% 1H NMR spectrum of rotenone using T1/T2 relaxation model,
-% magnetic parameters from:
-% 
-%         http://dx.doi.org/10.1002/jhet.5570250160
-%
-% Calculation time: seconds
-%
-% matthew.krzystyniak@oerc.ox.ac.uk
-% i.kuprov@soton.ac.uk
-
+% Modified Spinach File that loops inter.coupling.scalar{2,3} = 55 “+ 1”
 function C13_1D[2]()
 
 % Isotopes
@@ -16,55 +7,61 @@ sys.isotopes={'13C','13C','13C'};
 sys.magnet=21.1;
 
 % Chemical shifts
-inter.zeeman.scalar={20.0 50 80};
+inter.zeeman.scalar={10.0, 40, 70};
 
-% Scalar couplings
-inter.coupling.scalar{1,2}=38; 
-inter.coupling.scalar{2,3}=55; 
-inter.coupling.scalar{1,3}=0.0; 
-inter.coupling.scalar{3,3}=0; 
-% Relaxation model
-inter.relaxation={'t1_t2'};
-inter.rlx_keep='diagonal';
-inter.r1_rates=num2cell(1.0*ones(1,3));
-inter.r2_rates=num2cell(3.0*ones(1,3));
-inter.equilibrium='zero';
+% Loop to increment scalar coupling {2,3} and generate 100 figures
+for increment = 0:99  % Loop from 0 to 99 for 100 figures
+    % Scalar couplings
+    inter.coupling.scalar{1,2} = 50;
+    inter.coupling.scalar{2,3} = 55 + increment;  % Increment each time
+    inter.coupling.scalar{1,3} = 0.0;
+    inter.coupling.scalar{3,3} = 0;
 
-% Basis set
-bas.formalism='sphten-liouv';
-bas.approximation='IK-2';
-bas.connectivity='scalar_couplings';
-bas.space_level=1;
-%bas.sym_group={'S3','S3','S3'};
-%bas.sym_spins={[14 15 16],[17 18 19],[20 21 22]};
+    % Relaxation model
+    inter.relaxation = {'t1_t2'};
+    inter.rlx_keep = 'diagonal';
+    inter.r1_rates = num2cell(1.0 * ones(1, 3));
+    inter.r2_rates = num2cell(3.0 * ones(1, 3));
+    inter.equilibrium = 'zero';
 
-% Spinach housekeeping
-spin_system=create(sys,inter);
-spin_system=basis(spin_system,bas);
+    % Basis set
+    bas.formalism = 'sphten-liouv';
+    bas.approximation = 'IK-2';
+    bas.connectivity = 'scalar_couplings';
+    bas.space_level = 1;
 
-% Sequence parameters
-parameters.spins={'13C'};
-parameters.rho0=state(spin_system,'L+','13C','cheap');
-parameters.coil=state(spin_system,'L+','13C','cheap');
-parameters.decouple={};
-parameters.offset=10000;
-parameters.sweep=25000;
-parameters.npoints=8192;
-parameters.zerofill=16536;
-parameters.axis_units='ppm';
-parameters.invert_axis=1;
+    % Spinach housekeeping
+    spin_system = create(sys, inter);
+    spin_system = basis(spin_system, bas);
 
-% Simulation
-fid=liquid(spin_system,@acquire,parameters,'nmr');
+    % Sequence parameters
+    parameters.spins = {'13C'};
+    parameters.rho0 = state(spin_system, 'L+', '13C', 'cheap');
+    parameters.coil = state(spin_system, 'L+', '13C', 'cheap');
+    parameters.decouple = {};
+    parameters.offset = 10000;
+    parameters.sweep = 25000;
+    parameters.npoints = 8192;
+    parameters.zerofill = 16536;
+    parameters.axis_units = 'ppm';
+    parameters.invert_axis = 1;
 
-% Apodization
-fid=apodization(fid,'gaussian-1d',10);
+    % Simulation
+    fid = liquid(spin_system, @acquire, parameters, 'nmr');
 
-% Fourier transform
-spectrum=fftshift(fft(fid,parameters.zerofill));
+    % Apodization
+    fid = apodization(fid, 'gaussian-1d', 10);
 
-% Plotting
-figure(); plot_1d(spin_system,real(spectrum),parameters);
+    % Fourier transform
+    spectrum = fftshift(fft(fid, parameters.zerofill));
 
+    % Plotting
+    figure();
+    plot_1d(spin_system, real(spectrum), parameters);
+    title(['Scalar Coupling {2,3} = ', num2str(55 + increment)]);  % Add a title to each figure
+
+    % Close figure after displaying to prevent limit issues
+    drawnow;  % Ensure the figure is rendered
+    pause(0.1);  % Brief pause to allow rendering if needed
 end
 
